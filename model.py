@@ -23,9 +23,43 @@ class User(db.Model):
     age = db.Column(db.Integer, nullable=True)
     zipcode = db.Column(db.String(15), nullable=True)
 
+    def __repr__(self):
+        """Provide helpful representation about user when printed"""
+
+        return f"<User user_id={self.user_id} email={self.email}>"
 
 # Put your Movie and Rating model classes here.
 
+class Movie(db.Model):
+    """Table of movies"""
+
+    __tablename__ = "movies"
+
+    movie_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    title = db.Column(db.String(100)) #repeat titles bc remakes!
+    released_at = db.Column(db.DateTime) #might not exist
+    imdb_url = db.Column(db.String(200)) #might be unique, but not sure
+
+    def __repr__(self):
+        """Provide helpful representation about movie when printed"""
+
+        return f"<Movie movie_id={self.movie_id} title={self.title}>"
+
+
+class Rating(db.Model):
+    """Table of ratings"""
+
+    __tablename__ = "ratings"
+
+    rating_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    movie_id = db.Column(db.Integer) #foreign key
+    user_id = db.Column(db.Integer) #foreign key
+    score = db.Column(db.Integer) #removed null for flexibility
+
+    def __repr__(self):
+        """Provide helpful representation about ratings when printed"""
+
+        return f"<Rating rating_id={self.rating_id} score={self.score}>"
 
 ##############################################################################
 # Helper functions

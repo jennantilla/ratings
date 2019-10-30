@@ -1,7 +1,7 @@
 """Utility file to seed ratings database from MovieLens data in seed_data/"""
 
 from sqlalchemy import func
-from model import User, Movie
+from model import User, Movie, Rating
 # from model import Rating
 # from model import Movie
 
@@ -50,14 +50,18 @@ def load_movies():
         movie_id = movie_info[0]
 
         #removing year at end of movie title
-        title = movie_info[1]
-        #ERROR! GETTING YEAR STILL!!! 
+        title = movie_info[1] 
         title_name = title.split(" ")
-        " ".join(title_name.pop())
+        title_name.pop() #edited in place. removed year!
+        title= " ".join(title_name)
 
         released_at = movie_info[2]
-        format = "%d-%b-%Y"
-        released_at = datetime.strptime(released_at, format)
+
+        if released_at:
+            format = "%d-%b-%Y"
+            released_at = datetime.strptime(released_at, format)
+        else:
+            released_at = None
 
         imdb_url = movie_info[4]
 
@@ -71,6 +75,27 @@ def load_movies():
 
 def load_ratings():
     """Load ratings from u.data into database."""
+
+    print("Ratings")
+
+    Rating.query.delete()
+
+    for row in open("seed_data/u.data"):
+        row = row.rstrip()
+        rating_info = row.split("\t")
+        rating_info.pop()
+
+        for index, item in enumerate (rating_info):
+            item = int(item)
+            rating_info[index] = item
+
+        movie_id, user_id, score = rating_info
+
+        rating = Rating(movie_id=movie_id, user_id=user_id, score=score)
+
+        db.session.add(rating)
+
+    db.session.commit()
 
 
 def set_val_user_id():

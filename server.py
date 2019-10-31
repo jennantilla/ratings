@@ -68,14 +68,32 @@ def login_process():
 
     user = User.query.filter_by(email=email_address, password=password).first()
 
-    if user.email == email_address and user.password == password:
-        flash('You were successfully logged in!')
-        return redirect('/')
-
-    else: 
+    if user == None: 
         flash('Your email or password is incorrect. Please try again.')
         return redirect('/login')
 
+    if user.email == email_address and user.password == password:
+        session["user"] = user.email
+        flash('You were successfully logged in!')
+        return redirect(f'/users/{user.user_id}')
+
+
+@app.route('/logout')
+def logout():
+    """Handles user log out"""
+
+    session.clear()
+    flash('You were successfully logged out. SEE YOU LATER ALLIGATOR!')
+    return redirect('/')
+    
+@app.route('/users/<int:user_id>')
+def user_info(user_id):
+    """Display user information: age, zipcode, ratings"""
+
+    user_obj = User.query.filter_by(user_id = user_id).first()
+    rating_obj = user_obj.ratings
+
+    return render_template("user_page.html", user=user_obj, ratings=rating_obj)
 
 
 
